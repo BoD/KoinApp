@@ -30,7 +30,7 @@ val appModule = module {
     }
 
     navigation<Editor> { route ->
-      val owner = koinViewModel<EditorViewModel>(scope = this) {
+      val owner = koinViewModel<EditorViewModel> {
         parametersOf(route.sessionId)
       }
       EditorNavDisplay(owner)
