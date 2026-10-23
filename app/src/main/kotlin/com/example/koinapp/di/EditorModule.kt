@@ -28,13 +28,13 @@ val editorModule = module {
 
     navigation<Draft> {
       val editorNavigator = getSource<EditorNavigator>()!!
-      val viewModel = koinViewModel<DraftViewModel>(scope = this)
+      val viewModel = koinViewModel<DraftViewModel>()
       DraftScreen(viewModel, onPreview = editorNavigator::preview, onDiscard = editorNavigator.onFinishEditor)
     }
 
     navigation<Preview> {
       val editorNavigator = getSource<EditorNavigator>()!!
-      val viewModel = koinViewModel<PreviewViewModel>(scope = this)
+      val viewModel = koinViewModel<PreviewViewModel>()
       PreviewScreen(viewModel, onBack = editorNavigator::goBack, onDiscard = editorNavigator.onFinishEditor)
     }
   }
