@@ -67,4 +67,24 @@ class EditorFlowTest {
     compose.onNodeWithText("Notes").assertIsDisplayed()
     compose.waitUntil { session.isClosed }
   }
+
+  @Test
+  fun discardingFromPreviewClosesTheEntireEditingFlow() {
+    compose.onNodeWithText("New draft").performClick()
+    compose.onNodeWithText("Preview draft").performClick()
+    val scope = compose.runOnIdle {
+      val route = compose.activity.scope.get<AppNavigator>().backStack.last() as Editor
+      compose.activity.scope.getKoin().getScope("editing:${route.sessionId}")
+    }
+    val session = compose.runOnIdle { scope.get<EditingSession>() }
+
+    compose.onNodeWithText("Discard draft").performClick()
+    compose.onNodeWithText("Notes").assertIsDisplayed()
+    compose.waitUntil { session.isClosed }
+    compose.runOnIdle {
+      org.junit.Assert.assertNull(
+        compose.activity.scope.getKoin().getScopeOrNull(scope.id),
+      )
+    }
+  }
 }
