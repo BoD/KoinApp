@@ -7,9 +7,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.testTag
 
 @Composable
-internal fun SessionLabel(instanceId: String) {
+internal fun SessionLabel(sessionId: String) {
   Text(
-    text = "Editing session: ${instanceId.take(8)}",
+    text = "Editing session: ${sessionId.take(8)}",
     style = MaterialTheme.typography.labelSmall,
     color = MaterialTheme.colorScheme.onSurfaceVariant,
     modifier = Modifier.testTag("editing-session"),

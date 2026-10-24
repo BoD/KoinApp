@@ -24,6 +24,6 @@ fun DraftScreen(
       modifier = Modifier.fillMaxWidth(),
     )
     Button(onClick = onPreview) { Text("Preview draft") }
-    SessionLabel(viewModel.session.instanceId)
+    SessionLabel(viewModel.session.sessionId)
   }
 }

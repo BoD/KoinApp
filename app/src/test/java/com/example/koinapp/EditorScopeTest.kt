@@ -18,13 +18,14 @@ class EditorScopeTest {
   fun draftAndPreviewShareSessionUntilScopeCloses() {
     val application = koinApplication { modules(editorModule) }
     try {
-      val navigator = EditorNavigator {}
+      val navigator = EditorNavigator("first") {}
       val scope = application.koin.createScope<EditingSession>("first", source = navigator)
       val draft = scope.get<DraftViewModel>()
       val preview = scope.get<PreviewViewModel>()
 
       draft.updateText("A shared draft")
       assertSame(draft.session, preview.session)
+      assertEquals("first", draft.session.sessionId)
       assertEquals("A shared draft", preview.session.text)
 
       navigator.preview()
@@ -44,13 +45,15 @@ class EditorScopeTest {
   fun independentFlowsHaveIndependentSessions() {
     val application = koinApplication { modules(editorModule) }
     try {
-      val first = application.koin.createScope<EditingSession>("first")
-      val second = application.koin.createScope<EditingSession>("second")
+      val first = application.koin.createScope<EditingSession>("first", source = EditorNavigator("first") {})
+      val second = application.koin.createScope<EditingSession>("second", source = EditorNavigator("second") {})
       val firstSession = first.get<EditingSession>()
       val secondSession = second.get<EditingSession>()
 
       firstSession.text = "First flow only"
       assertNotSame(firstSession, secondSession)
+      assertEquals("first", firstSession.sessionId)
+      assertEquals("second", secondSession.sessionId)
       assertEquals("", secondSession.text)
     } finally {
       application.close()

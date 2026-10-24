@@ -28,7 +28,7 @@ val appModule = module {
       val appNavigator = get<AppNavigator>()
       KoinNavEntryScope<EditingSession>(
         scopeID = "editing:${route.sessionId}",
-        source = { EditorNavigator(appNavigator::goBack) },
+        source = { EditorNavigator(route.sessionId, appNavigator::goBack) },
       ) {
         EditorNavDisplay(editorNavigator = getSource<EditorNavigator>()!!)
       }

@@ -3,20 +3,18 @@ package com.example.koinapp.editor
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import java.util.UUID
 
-class EditingSession {
-  val instanceId: String = UUID.randomUUID().toString()
+class EditingSession(val sessionId: String) {
   var text: String by mutableStateOf("")
   var isClosed: Boolean = false
     private set
 
   init {
-    println("EditingSession created: $instanceId")
+    println("EditingSession created: $sessionId")
   }
 
   fun close() {
     isClosed = true
-    println("EditingSession closed: $instanceId")
+    println("EditingSession closed: $sessionId")
   }
 }

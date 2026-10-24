@@ -15,6 +15,8 @@ import com.example.koinapp.navigation.AppNavigator
 import com.example.koinapp.navigation.Editor
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotEquals
+import org.junit.Assert.assertNotSame
+import org.junit.Assert.assertSame
 import org.junit.Rule
 import org.junit.Test
 
@@ -25,21 +27,28 @@ class EditorFlowTest {
   @Test
   fun sharedDraftSurvivesPreviewAndRecreationAndDiscardStartsFresh() {
     compose.onNodeWithText("New draft").performClick()
-    val originalSession = sessionLabel()
+    val originalSession = currentSession()
+    val originalLabel = sessionLabel()
+    assertEquals("Editing session: ${originalSession.sessionId.take(8)}", originalLabel)
     compose.onNodeWithText("Your draft").performTextInput("My first note")
     compose.onNodeWithText("Preview draft").performScrollTo().performClick()
     compose.onNodeWithText("My first note").assertIsDisplayed()
-    assertEquals(originalSession, sessionLabel())
+    assertEquals(originalLabel, sessionLabel())
+    assertSame(originalSession, currentSession())
 
     compose.activityRule.scenario.recreate()
     compose.onNodeWithText("My first note").assertIsDisplayed()
-    assertEquals(originalSession, sessionLabel())
+    assertEquals(originalLabel, sessionLabel())
+    assertSame(originalSession, currentSession())
 
     compose.onNodeWithText("Back to draft").performClick()
+    assertSame(originalSession, currentSession())
     compose.onNodeWithText("Your draft").assertTextContains("My first note")
     compose.onNodeWithText("Discard draft").performClick()
     compose.onNodeWithText("New draft").performClick()
-    assertNotEquals(originalSession, sessionLabel())
+    val freshSession = currentSession()
+    assertNotSame(originalSession, freshSession)
+    assertNotEquals(originalSession.sessionId, freshSession.sessionId)
     val text = compose.onNodeWithText("Your draft").fetchSemanticsNode()
       .config[SemanticsProperties.EditableText].text
     assertEquals("", text)
@@ -48,6 +57,14 @@ class EditorFlowTest {
   private fun sessionLabel(): String = compose.onNodeWithTag("editing-session")
     .performScrollTo()
     .fetchSemanticsNode().config[SemanticsProperties.Text].single().text
+
+  private fun currentSession(): EditingSession = compose.runOnIdle {
+    val route = compose.activity.scope.get<AppNavigator>().backStack.last() as Editor
+    val session = compose.activity.scope.getKoin().getScope("editing:${route.sessionId}")
+      .get<EditingSession>()
+    assertEquals(route.sessionId, session.sessionId)
+    session
+  }
 
   @Test
   fun androidBackReturnsToDraftThenClosesTheEditingScope() {

@@ -16,11 +16,10 @@ import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 import org.koin.dsl.navigation3.navigation
 import org.koin.dsl.onClose
-import org.koin.plugin.module.dsl.scoped
 
 val editorModule = module {
   scope<EditingSession> {
-    scoped<EditingSession>().onClose { it?.close() }
+    scoped { EditingSession(getSource<EditorNavigator>()!!.sessionId) }.onClose { it?.close() }
 
     viewModel { DraftViewModel(get()) }
 

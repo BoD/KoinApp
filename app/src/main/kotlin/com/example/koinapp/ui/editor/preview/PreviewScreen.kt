@@ -19,6 +19,6 @@ fun PreviewScreen(
       style = MaterialTheme.typography.bodyLarge,
     )
     Button(onClick = onBack) { Text("Back to draft") }
-    SessionLabel(viewModel.session.instanceId)
+    SessionLabel(viewModel.session.sessionId)
   }
 }
